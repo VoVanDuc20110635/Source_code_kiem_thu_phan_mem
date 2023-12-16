@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout (content, head_additional)">
+<head>
+    <div th:replace="~{fragment/boot1/admin_fragment :: head_html}"></div>
+    <div th:replace="${head_additional}"></div>
+</head>
+<body>
+
+<div class="flex h-screen bg-gray-50 dark:bg-gray-900"
+     :class="{ 'overflow-hidden': isSideMenuOpen }">
+    <th:block th:replace="~{fragment/boot1/admin_fragment :: sidebar}"></th:block>
+<!--    <th:block th:replace="~{fragment/boot1/admin_fragment :: navigation}"></th:block>-->
+
+    <th:block th:replace="${content}"></th:block>
+
+    <th:block th:replace="~{fragment/boot1/admin_fragment :: script}"></th:block>
+<!--    <script src="/javascript/admin.js"></script>-->
+</div>
+
+</body>
+</html>

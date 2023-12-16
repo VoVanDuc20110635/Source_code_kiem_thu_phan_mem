@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/boot1/admin_layout :: layout (~{::content}, ~{::head_additional})}">
+<head>
+    <th:block th:fragment="head_additional">
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+        <script src="/javascript/boot1/admin/init-alpine.js" th:src="@{/javascript/boot1/admin/init-alpine.js}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
+        <script src="/javascript/boot1/admin/charts-lines.js" th:src="@{/javascript/boot1/admin/charts-lines.js}" ></script>
+        <script src="/javascript/boot1/admin/charts-pie.js" th:src="@{/javascript/boot1/admin/charts-pie.js}"></script>
+        <!--        <link rel="stylesheet" href="/css/crud.css">-->
+        <script src="/javascript/modalOrder.js"></script>
+        <!-- Theme style -->
+        <!--        <link rel="stylesheet" href="/admin/dist/css/adminlte.min.css">-->
+        <link rel="stylesheet/scss" href="/javascript/scss/bootstrap/scss/_modal.scss" th:href="@{/javascript/scss/bootstrap/scss/_modal.scss}"/>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="flex flex-col flex-1 w-full">
+        <!--        header-->
+        <header class="z-10 py-4 bg-white shadow-md dark:bg-gray-800">
+            <div
+              class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600 dark:text-purple-300"
+            >
+                <!-- Mobile hamburger -->
+                <button
+                  class="p-1 mr-5 -ml-1 rounded-md md:hidden focus:outline-none focus:shadow-outline-purple"
+                  @click="toggleSideMenu"
+                  aria-label="Menu"
+                >
+                    <svg
+                      class="w-6 h-6"
+                      aria-hidden="true"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                        <path
+                          fill-rule="evenodd"
+                          d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                          clip-rule="evenodd"
+                        ></path>
+                    </svg>
+                </button>
+                <!-- Search input -->
+                <div class="flex justify-center flex-1 lg:mr-32">
+                    <div
+                      class="relative w-full max-w-xl mr-6 focus-within:text-purple-500"
+                    >
+                        <div class="absolute inset-y-0 flex items-center pl-2">
+                            <svg
+                              class="w-4 h-4"
+                              aria-hidden="true"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                                <path
+                                  fill-rule="evenodd"
+                                  d=""
+                                  clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </div>
+                        <input
+                          class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
+                          type="text"
+                          placeholder="This is the management page"
+                          aria-label="Search"
+                          readonly
+                        />
+                    </div>
+                </div>
+                <ul class="flex items-center flex-shrink-0 space-x-6">
+                    <!-- Theme toggler -->
+                    <li class="flex">
+                        <button
+                          class="rounded-md focus:outline-none focus:shadow-outline-purple"
+                          @click="toggleTheme"
+                          aria-label="Toggle color mode"
+                        >
+                            <template x-if="!dark">
+                                <svg
+                                  class="w-5 h-5"
+                                  aria-hidden="true"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                    <path
+                                      d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+                                    ></path>
+                                </svg>
+                            </template>
+                            <template x-if="dark">
+                                <svg
+                                  class="w-5 h-5"
+                                  aria-hidden="true"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                                      clip-rule="evenodd"
+                                    ></path>
+                                </svg>
+                            </template>
+                        </button>
+                    </li>
+                    <!-- Notifications menu -->
+                    <li class="relative">
+                        <button
+                          class="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple"
+                          @click="toggleNotificationsMenu"
+                          @keydown.escape="closeNotificationsMenu"
+                          aria-label="Notifications"
+                          aria-haspopup="true"
+                        >
+                            <svg
+                              class="w-5 h-5"
+                              aria-hidden="true"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                                <path
+                                  d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+                                ></path>
+                            </svg>
+                            <!-- Notification badge -->
+                            <span
+                              aria-hidden="true"
+                              class="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-600 border-2 border-white rounded-full dark:border-gray-800"
+                            ></span>
+                        </button>
+                        <template x-if="isNotificationsMenuOpen">
+                            <ul
+                              x-transition:leave="transition ease-in duration-150"
+                              x-transition:leave-start="opacity-100"
+                              x-transition:leave-end="opacity-0"
+                              @click.away="closeNotificationsMenu"
+                              @keydown.escape="closeNotificationsMenu"
+                              class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700"
+                            >
+                                <li class="flex">
+                                    <a
+                                      class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                      href="#"
+                                    >
+                                        <span>Messages</span>
+                                        <span
+                                          class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600"
+                                        >
+                              13
+                            </span>
+                                    </a>
+                                </li>
+                                <li class="flex">
+                                    <a
+                                      class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                      href="#"
+                                    >
+                                        <span>Sales</span>
+                                        <span
+                                          class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600"
+                                        >
+                              2
+                            </span>
+                                    </a>
+                                </li>
+                                <li class="flex">
+                                    <a
+                                      class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                      href="#"
+                                    >
+                                        <span>Alerts</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </template>
+                    </li>
+                    <!-- Profile menu -->
+                    <li class="relative">
+                        <button
+                          class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
+                          @click="toggleProfileMenu"
+                          @keydown.escape="closeProfileMenu"
+                          aria-label="Account"
+                          aria-haspopup="true"
+                        >
+                            <img
+                              class="object-cover w-8 h-8 rounded-full"
+                              src="https://images.unsplash.com/photo-1502378735452-bc7d86632805?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=aa3a807e1bbdfd4364d1f449eaa96d82"
+                              alt=""
+                              aria-hidden="true"
+                            />
+                        </button>
+                        <template x-if="isProfileMenuOpen">
+                            <ul
+                              x-transition:leave="transition ease-in duration-150"
+                              x-transition:leave-start="opacity-100"
+                              x-transition:leave-end="opacity-0"
+                              @click.away="closeProfileMenu"
+                              @keydown.escape="closeProfileMenu"
+                              class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:border-gray-700 dark:text-gray-300 dark:bg-gray-700"
+                              aria-label="submenu"
+                            >
+                                <li class="flex">
+                                    <a
+                                      class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                      th:href="@{/logout}"
+                                    >
+                                        <svg
+                                          class="w-4 h-4 mr-3"
+                                          aria-hidden="true"
+                                          fill="none"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          stroke-width="2"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                            <path
+                                              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                                            ></path>
+                                        </svg>
+                                        <span>Log out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </template>
+                    </li>
+                </ul>
+            </div>
+        </header>
+        <!--        main-->
+        <main class="h-full overflow-y-auto">
+            <div class="container px-6 mx-auto grid">
+                <h2
+                  class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
+                >
+                    Dashboard
+                </h2>
+                <!-- CTA -->
+                <a
+                  class="flex items-center justify-between p-4 mb-8 text-sm font-semibold text-purple-100 bg-purple-600 rounded-lg shadow-md focus:outline-none focus:shadow-outline-purple"
+                  href="https://github.com/VoVanDuc20110635/FourLeavesShoes"
+                >
+                    <div class="flex items-center">
+                        <svg
+                          class="w-5 h-5 mr-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                            <path
+                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                            ></path>
+                        </svg>
+                        <span>Star this project on GitHub</span>
+                    </div>
+                    <span>View more &RightArrow;</span>
+                </a>
+                <!-- Cards -->
+                <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+                    <!-- Card -->
+                    <div
+                      class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
+                    >
+                        <div
+                          class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500"
+                        >
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                  d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Total
+                            </p>
+                            <p class="text-lg font-semibold text-gray-700 dark:text-gray-200" th:text="${totalElements}"></p>
+                        </div>
+                    </div>
+
+                    <!-- Card -->
+                    <div
+                      class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
+                    >
+                        <div
+                          class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
+                        >
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <g transform="translate(-1.5, 0)">
+                                    <path d="M0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5ZM7.0718 10.7106L11.3905 5.31232L10.6096 4.68762L6.92825 9.2893L4.32012 7.11586L3.67993 7.88408L7.0718 10.7106Z" fill="#ffffff" id="mainIconPathAttribute" stroke-width="1" stroke="#4dff00"
+                                          transform="scale(1.5)"
+                                    ></path>
+                                </g>
+                                <!--                                link lay svg: https://fontawesomeicons.com/svg/icons/tick-circle-->
+                            </svg>
+                        </div>
+                        <div>
+                            <p
+                              class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+                            >
+                                Deliveried
+                            </p>
+                            <p
+                              class="text-lg font-semibold text-gray-700 dark:text-gray-200"
+                              th:text="${numberOfdeliveriedOrders}">
+
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Card -->
+                    <div
+                      class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                        <div class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 35 30">
+                                <g transform="translate(-1.5, 0)">
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M20 22h-2v-2a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v2H4v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2zm-8-9a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" id="mainIconPathAttribute" stroke="#00ff33" fill="#ffffff"
+                                      clip-rule="evenodd"
+                                      transform="scale(1.5)">
+                                    </path>
+                                </g>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Awaiting refund
+                            </p>
+                            <p class="text-lg font-semibold text-gray-600 dark:text-gray-400"
+                               th:text="${numberOfawaitingRefundOrders}">35</p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <!-- New Table -->
+                <div class="w-full overflow-hidden rounded-lg shadow-xs">
+                    <div class="w-full overflow-x-auto">
+                        <table class="table w-full whitespace-no-wrap">
+                            <thead>
+                            <tr
+                              class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
+                            >
+                                <th class="px-4 py-3">ID</th>
+                                <th class="px-4 py-3">Name</th>
+                                <th class="px-4 py-3">Email</th>
+                                <th class="px-4 py-3">Phone Number</th>
+                                <th class="px-4 py-3">Address</th>
+                                <th class="px-4 py-3">City</th>
+                                <th class="px-4 py-3">Zip</th>
+                                <th class="px-4 py-3">Order Date</th>
+                                <th class="px-4 py-3">Payment Method</th>
+                                <th class="px-4 py-3">Total</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                            <tr class="text-gray-700 dark:text-gray-400" th:each="order : ${orders}">
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center text-sm">
+                                        <div>
+                                            <p class="font-semibold" id="idName" th:text="'#'+${order.id}">Hans Burger</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${order.user.id}">
+                                    2022-11-12
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${order.email}">
+                                    2022-11-12
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${order.phoneNumber}">
+                                    1
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${order.address}">
+                                    1
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${order.city}">
+                                    1
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${order.zip}">
+                                    1
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${#dates.format(order.orderDate, 'yyyy/MM/dd')}">
+                                    1
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${order.paymentMethod.name}">
+                                    1
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'COMMA')+'đ'}">
+                                    1
+                                </td>
+                                <td class="px-4 py-3 text-sm" th:if="${order.status == 1}">Pending verification</td>
+                                <td class="px-4 py-3 text-sm" th:if="${order.status == 2}">Verified</td>
+                                <td class="px-4 py-3 text-sm" th:if="${order.status == 3}">On its way</td>
+                                <td class="px-4 py-3 text-sm" th:if="${order.status == 4}">Delivered</td>
+                                <td class="px-4 py-3 text-sm" th:if="${order.status == 5}">Processing return</td>
+                                <td class="px-4 py-3 text-sm" th:if="${order.status == 6}">Return processed</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <a href="#editModal" class="edit" data-toggle="modal"
+                                       onclick="showEditModal()"><i
+                                      class="material-icons"
+                                      data-toggle="tooltip"
+                                      title="Edit">&#xE254;</i></a>
+                                    <a href="#deleteModal" id="deleteModalIcon" class="delete" data-toggle="modal"
+                                       onclick="showDeleteModal()"><i
+                                      class="material-icons"
+                                      data-toggle="tooltip"
+                                      title="Delete">&#xE872;</i></a>
+                                    <input type="hidden" id="id" th:value="${order.id}">
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div
+                      class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
+                    >
+                <span th:if="${currentPage*sortType < totalElements }" class="flex items-center col-span-3-paging" th:text="${'Showing ' + (((currentPage*sortType)-sortType) + 1) + '-' + currentPage*sortType + ' of ' + totalElements}">
+                  Showing 21-30 of 100
+                </span>
+                        <span th:if="${currentPage*sortType >= totalElements }" class="flex items-center col-span-3-paging" th:text="${'Showing ' + (((currentPage*sortType)-sortType) + 1) + '-' + totalElements + ' of ' + totalElements}">
+                  Showing 21-30 of 100
+                </span>
+                        <span th:if="${(((currentPage*sortType)-sortType) + 1) > totalElements }" class="flex items-center col-span-3-paging" th:text="${'Out of list!'}">
+                  Showing 21-30 of 100
+                </span>
+                        <div class="flex items-center col-span-3-paging"><label for="entries">Show entries:</label>
+                            <select id="entries" onchange="getPageFromEntries(this.value)">
+                                <option value="5" onclick="getPageFromEntries(this.id)" th:selected="${sortType == 5}">5</option>
+                                <option value="10" onclick="getPageFromEntries(this.id)" th:selected="${sortType == 10}">10</option>
+                                <option value="25" onclick="getPageFromEntries(this.id)" th:selected="${sortType == 25}">25</option>
+                                <option value="50" onclick="getPageFromEntries(this.id)" th:selected="${sortType == 50}">50</option>
+                            </select><label th:text="'out of ' + ${totalElements} + ' entries'">25</label>
+                        </div>
+                        <!-- Pagination -->
+                        <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+                    <nav aria-label="Table navigation">
+                        <ul class="inline-flex items-center">
+                            <li class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple" th:classappend="${currentPage == 1 ? 'disabled' :''}"
+                                th:if="${currentPage>1}">
+                                <a th:href="@{/admin/order(sortType=${sortType}, currentPage=${currentPage - 1})}" tabindex="-1">Previous</a>
+                            </li>
+                            <li class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
+                                th:classappend="${page==currentPage ? 'active': ''}"
+                                th:style="${page == currentPage ? 'background: blue; color: white;' : ''}"
+                                th:each="page : ${#numbers.sequence(1, totalPages)}">
+                                <a th:href="@{/admin/order(sortType=${sortType}, currentPage=${page})}" class="page-link"
+                                   th:text="${page}">3</a></li>
+                            <li class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
+                                th:classappend="${currentPage == totalPages ? 'disabled' : ''}"
+                                th:if="${currentPage<totalPages}">
+                                <a th:href="@{/admin/order(sortType=${sortType}, currentPage=${currentPage+1})}"
+                                   class="page-link">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </span>
+                    </div>
+                </div>
+                <!-- Edit Modal HTML -->
+                <div id="editModal" class="modal fade" style="display: none; width: 350px;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="post" th:action="@{/admin/order/update}">
+                                <div class="modal-header">
+                                    <div class="header-left">
+                                        <h4 class="modal-title text-primary"><i class="fas fa-user-edit"></i> Update Order</h4>
+                                    </div>
+                                    <div class="header-right">
+                                        <button type="button" class="close text-danger" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    </div>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>User ID</label>
+                                        <input type="text" id="user" class="form-control" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" id="email" class="form-control" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Order Date</label>
+                                        <input type="text" id="orderDate" class="form-control" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="text" name="phoneNumber" id="phoneNumber" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                        <input type="text" name="address" id="address" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>City</label>
+                                        <input type="text" name="city" id="city" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Zip</label>
+                                        <input type="text" name="zip" id="zip" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Payment Method</label>
+                                        <input type="text" id="paymentMethod" class="form-control" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Total</label>
+                                        <input type="text" id="total" class="form-control" readonly>
+                                    </div>
+                                    <label for="status">Status:</label>
+                                    <select id="status" name="status">
+                                        <option value="1">Pending verification</option>
+                                        <option value="2">Verified</option>
+                                        <option value="3">On its way</option>
+                                        <option value="4">Delivered</option>
+                                        <option value="5">Processing return</option>
+                                        <option value="6">Return processed</option>
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                                    <input type="submit" class="btn btn-success" value="Save">
+                                    <input type="hidden" name="id" id="saveOrderId">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--    &lt;!&ndash; Delete Modal HTML &ndash;&gt;-->
+                <div id="deleteModal" class="modal fade" style="display: none; width: 350px;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="post" th:action="@{/admin/order/delete}">
+                                <div class="modal-header">
+                                    <div class="header-left">
+                                        <h4 class="modal-title">Delete Employee</h4>
+                                    </div>
+                                    <div class="header-right">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    </div>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="idName2"></p>
+                                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                                    <input type="submit" class="btn btn-danger" value="Delete">
+                                    <input type="hidden" name="id" id="deleteId">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <form id="hiddenForm" th:href="@{/admin/order}" method="GET" style="display: none;">
+                    <input type="hidden" name="sortType" th:value="${sortType}" />
+                    <input type="hidden" name="currentPage" th:value="${currentPage}" />
+                </form>
+            </div>
+        </main>
+    </div>
+
+
+
+
+    <script>
+        function getPageFromEntries(id){
+            var sortType = document.querySelector('input[name="sortType"]');
+            var currentPage = document.querySelector('input[name="currentPage"]');
+            sortType.value = id;
+            document.getElementById("hiddenForm").submit();
+        }
+    </script>
+    <script>
+        function showEditModal() {
+            var editModal = document.getElementById("editModal");
+            var createModal = document.getElementById("addModal");
+            var deleteModal = document.getElementById("deleteModal");
+            editModal.style.display = "block";
+            createModal.style.display = "none";
+            deleteModal.style.display = "none";
+        }
+    </script>
+    <script>
+        function showCreateModal() {
+            var editModal = document.getElementById("editModal");
+            var createModal = document.getElementById("addModal");
+            var deleteModal = document.getElementById("deleteModal");
+            createModal.style.display = "block";
+            deleteModal.style.display = "none";
+            editModal.style.display = "none";
+        }
+    </script>
+    <script>
+        function showDeleteModal() {
+            var editModal = document.getElementById("editModal");
+            // var createModal = document.getElementById("addModal");
+            var deleteModal = document.getElementById("deleteModal");
+            // createModal.style.display = "none";
+            deleteModal.style.display = "block";
+            editModal.style.display = "none";
+            // var idName = document.getElementById('idName');
+            // alert(idName.textContent);
+            // var idName2 = document.getElementById('idName2');
+            // idName2.textContent = 'Are you sure you want to remove "' +  idName.textContent + '" from the list?';
+        }
+    </script>
+    <script>
+        var closeButton = document.querySelector("#editModal .close");
+        closeButton.addEventListener("click", function() {
+            var editModal = document.getElementById("editModal");
+            editModal.style.display = "none";
+        });
+    </script>
+    <script>
+        var closeButton = document.querySelector("#addModal .close");
+        closeButton.addEventListener("click", function() {
+            var editModal = document.getElementById("addModal");
+            editModal.style.display = "none";
+        });
+    </script>
+    <script>
+        var closeButton = document.querySelector("#deleteModal .close");
+        closeButton.addEventListener("click", function() {
+            var editModal = document.getElementById("deleteModal");
+            editModal.style.display = "none";
+        });
+    </script>
+
+</th:block>
+
+</body>
+</html>

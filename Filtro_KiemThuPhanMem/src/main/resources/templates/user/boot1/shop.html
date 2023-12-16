@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/boot1/user_layout :: layout(~{::content}, ~{::head_additional})}">
+<html lang="en">
+
+<head>
+    <th:block th:fragment="head_additional">
+<!--        <link rel="stylesheet" type="text/css" href="/css/boot1/style.css" th:href="@{/css/boot1/style.css}">-->
+    </th:block>
+</head>
+
+<body>
+<div th:fragment="content">
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" th:href="@{'#navbar-vertical'}" data-toggle="collapse" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0">Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                <nav class="position-absolute bg-light collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 1;">
+                    <div style="height: 250px" class="w-100">
+                        <div class="navbar-nav w-100 overflow-hidden" th:each="category, item : ${categories}">
+                            <a class="nav-item nav-link" th:href="@{/category/{id}(id=${category.id})}"
+                               th:text="${category.categoryName}">Action</a>
+                            <th:block th:if="${item.count == item.size}">
+                                <a class="nav-item nav-link" th:href="@{/category/all}">Read more...</a>
+                            </th:block>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a th:href="@{/}" class="nav-item nav-link">Home</a>
+                            <a th:href="@{/category/{id}(id='all')}" class="nav-item nav-link active">Shop</a>
+                            <a th:if="${session.containsKey('account') && session.account != null}" th:href="@{/user/profile}" class="nav-item nav-link">Account</a>
+                            <a th:href="@{/contact}" class="nav-item nav-link">Contact</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0">
+                            <a th:if="${session.containsKey('account') && session.account == null}" th:href="@{/login}" class="nav-item nav-link">Login</a>
+                            <a th:if="${session.containsKey('account') && session.account == null}" th:href="@{/register}" class="nav-item nav-link">Register</a>
+                            <a th:if="${session.containsKey('account') && session.account != null}" th:href="@{/logout}" class="nav-item nav-link">Logout</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-secondary mb-5">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Our Shop</h1>
+            <div class="d-inline-flex">
+                <p class="m-0"><a href="">Home</a></p>
+                <p class="m-0 px-2">-</p>
+                <p class="m-0">Shop</p>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+
+    <!-- Shop Start -->
+    <div class="container-fluid pt-5">
+        <div class="row px-xl-5 justify-content-center">
+            <!-- Shop Product Start -->
+            <th:block th:if="${#lists.isEmpty(products)}">
+                <div class="col-lg-9 col-md-12">
+
+                    <h2 class="text-center">No matching products found!</h2>
+
+                </div>
+            </th:block>
+            <th:block th:if="${not #lists.isEmpty(products)}">
+                <!-- Shop Sidebar Start -->
+                <div class="col-lg-3 col-md-12">
+                    <form id="hiddenForm" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id})}" method="GET" style="display: none;">
+                        <input type="hidden" name="lowPrice" th:value="${dataLowPrice}" />
+                        <input type="hidden" name="highPrice" th:value="${dataHighPrice}" />
+                        <input type="hidden" name="sortType" th:value="${sortType}" />
+                        <input type="hidden" name="originId" th:value="${dataOriginId}" />
+                        <input type="hidden" name="currentPage" th:value="${currentPage}" />
+                    </form>
+                    <!-- Price Start -->
+                    <div class="border-bottom mb-4 pb-4">
+                        <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
+                        <form>
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" id="price-all" value="0,1000" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataLowPrice == 0 && dataHighPrice == 1000}">
+                                <label class="custom-control-label" for="price-all">All Price</label>
+
+                            </div>
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" id="price-1" value="0,50" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataLowPrice == 0 && dataHighPrice == 50}">
+                                <label class="custom-control-label" for="price-1">$0 - $50</label>
+
+                            </div>
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" id="price-2" value="50,100" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataLowPrice == 50 && dataHighPrice == 100}">
+                                <label class="custom-control-label" for="price-2">$50 - $100</label>
+
+                            </div>
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" id="price-3" value="100,150" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataLowPrice == 100 && dataHighPrice == 150}">
+                                <label class="custom-control-label" for="price-3">$100 - $150</label>
+
+                            </div>
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" id="price-4" value="150,200" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataLowPrice == 150 && dataHighPrice == 200}">
+                                <label class="custom-control-label" for="price-4">$150 - $200</label>
+
+                            </div>
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
+                                <input type="checkbox" class="custom-control-input" id="price-5" value="200,500" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataLowPrice == 200 && dataHighPrice == 500}">
+                                <label class="custom-control-label" for="price-5">Over $200</label>
+
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Price End -->
+
+                    <!-- Color Start -->
+                    <div class="border-bottom mb-4 pb-4">
+                        <h5 class="font-weight-semi-bold mb-4">Filter by origin</h5>
+                        <form th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id})}" method="GET">
+                            <input type="hidden" name="originId" th:value="${originId}"/>
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
+                                <input type="checkbox" class="custom-control-input" id="0" th:value="0" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataOriginId == 0}">
+                                <label class="custom-control-label" for="0">All</label>
+                            </div>
+                            <div th:each="origin : ${originList}" class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" th:id="${origin.id}" th:value="${origin.id}" onchange="submitHiddenFormFromSortType(this.value)" th:checked="${dataOriginId == origin.id}">
+                                <label class="custom-control-label" th:for="${origin.id}" th:text="${origin.originName}">All Color</label>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Color End -->
+                </div>
+                <!-- Shop Product Start -->
+                <div class="col-lg-9 col-md-12">
+                    <div class="col-12 pb-1">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="dropdown ml-4">
+                                <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                    Sort by
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
+                                    <a class="dropdown-item" id="best_selling" onclick="submitHiddenFormFromSortType(this.id)">Top-selling product</a>
+                                    <a class="dropdown-item" id="product_name_asc" onclick="submitHiddenFormFromSortType(this.id)">Product Name: A-Z</a>
+                                    <a class="dropdown-item" id="product_name_desc" onclick="submitHiddenFormFromSortType(this.id)">Product Name: Z-A</a>
+                                    <a class="dropdown-item" id="price_asc" onclick="submitHiddenFormFromSortType(this.id)">Price Ascending</a>
+                                    <a class="dropdown-item" id="price_desc" onclick="submitHiddenFormFromSortType(this.id)">Price Descending</a>
+                                    <a class="dropdown-item" id="newest" onclick="submitHiddenFormFromSortType(this.id)">Newest</a>
+                                    <a class="dropdown-item" id="oldest" onclick="submitHiddenFormFromSortType(this.id)">Oldest</a>
+                                    <!--                                <a class="dropdown-item" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id},sortType='best_selling')}">Top-selling product</a>-->
+                                    <!--                                <a class="dropdown-item" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id},sortType='product_name_asc')}">Product Name: A-Z</a>-->
+                                    <!--                                <a class="dropdown-item" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id},sortType='product_name_desc')}">Product Name: Z-A</a>-->
+                                    <!--                                <a class="dropdown-item" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id},sortType='price_asc')}">Price Ascending</a>-->
+                                    <!--                                <a class="dropdown-item" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id},sortType='price_desc')}">Price Descending</a>-->
+                                    <!--                                <a class="dropdown-item" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id},sortType='newest')}">Newest</a>-->
+                                    <!--                                <a class="dropdown-item" th:href="@{/category/{id}(id=${currentIdAll == 'all' ? 'all' : category.id},sortType='oldest')}">Oldest</a>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pb-3 px-xl-5" >
+
+                        <div th:each="product : ${products}" class="col-lg-3-three col-md-6 col-sm-12 pb-1">
+                            <form th:action="@{/cart/add}" method="POST">
+                                <div class="card product-item border-0 mb-4">
+                                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                        <img class="img-fluid" th:src="@{${product.image}}" alt="">
+                                    </div>
+                                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                        <h6 class="text-truncate mb-3" th:text="${product.productName}">Colorful Stylish Shirt</h6>
+                                        <div class="d-flex justify-content-center">
+                                            <h6 th:text="${#numbers.formatDecimal(product.price - (product.price*product.discount/100), 0, 'COMMA', 0, 'COMMA')} + 'đ'">$123.00</h6><h6 class="text-muted ml-2" ><del th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'COMMA')} + 'đ'">$123.00</del></h6>
+                                            <!--                                        th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'COMMA')} + 'đ'"-->
+                                            <!--                                        th:text="${#numbers.formatDecimal(product.price - (product.price*product.discount/100), 0, 'COMMA', 0, 'COMMA') + 'đ'}"-->
+                                            <!--                                        th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'COMMA') + 'đ'}"-->
+                                        </div>
+                                    </div>
+                                    <input type="hidden" th:value="${product.id}" name="productId">
+                                    <input type="hidden" th:value=1 name="quantity">
+                                    <div class="card-footer d-flex justify-content-between bg-light border">
+                                        <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                                        <button class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1" type="submit"></i>Add To Cart</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-12 pb-1">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center mb-3">
+                                    <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                        <a class="page-link" th:id="${currentPage > 1 ? 'page-' + (currentPage - 1) : 'page-' + (currentPage)}"
+                                           th:value="${currentPage > 1 ? 'page-' + (currentPage - 1) : 'page-' + (currentPage)}"
+                                           onclick="submitHiddenFormFromSortType(this.value)"
+                                           aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                    <th:block th:if="${totalPages > 0}">
+                                        <li class="page-item" th:classappend="${page == currentPage ? 'active' : ''}"
+                                            th:each="page : ${#numbers.sequence(1, totalPages)}">
+                                            <a class="page-link"
+                                               th:id="${'page-' + page}"
+                                               onclick="submitHiddenFormFromSortType(this.id)"
+                                               th:text="${page}"></a>
+                                        </li>
+                                    </th:block>
+
+                                    <th:block th:unless="${totalPages > 0}">
+                                        <li class="page-item" th:classappend="${page == currentPage ? 'active' : ''}">
+                                            <a class="page-link"
+                                               th:id="${'page-1'}"
+                                               onclick="submitHiddenFormFromSortType(this.id)"
+                                               th:text="1"></a>
+                                        </li>
+                                    </th:block>
+                                    <!--                                <li class="page-item"><a class="page-link" href="#">2</a></li>-->
+                                    <!--                                <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+                                    <li class="page-item" th:classappend="${currentPage >= totalPages ? 'disabled' : ''} ">
+                                        <a class="page-link" th:id="${currentPage < totalPages ? 'page-' + (currentPage + 1) : 'page-' + (currentPage)}"
+                                           onclick="submitHiddenFormFromSortType(this.id)"
+                                           aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <!-- Shop Product End -->
+                <!-- Shop Sidebar End -->
+            </th:block>
+        </div>
+    </div>
+    <!-- Shop End -->
+
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    <script>
+        function submitHiddenFormFromSortType(input) {
+            var lowPrice = document.querySelector('input[name="lowPrice"]');
+            var highPrice = document.querySelector('input[name="highPrice"]');
+            var sortType = document.querySelector('input[name="sortType"]');
+            var originId = document.querySelector('input[name="originId"]');
+            var currentPage = document.querySelector('input[name="currentPage"]');
+            // alert("ban dang chon page: " + input);
+            if (input.includes(',')){
+                var priceRange = input.split(',')
+                lowPrice.value = priceRange[0];
+                highPrice.value = priceRange[1];
+            } else if (input.includes("page")){
+                // var priceRange = checkbox.value.split(',')
+                var pageNumberString = input.split('-');
+                currentPage.value = pageNumberString[1];
+                // alert("dang kiem tra page");
+            } else if (input.length >= 5){
+                sortType.value = input;
+            } else {
+                originId.value = input;
+            }
+            // alert(lowPrice.value + " " + highPrice.value + " " + sortType.value + " " + originId.value + " " + currentPage.value);
+            document.getElementById("hiddenForm").submit();
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</div>
+
+</body>
+</html>

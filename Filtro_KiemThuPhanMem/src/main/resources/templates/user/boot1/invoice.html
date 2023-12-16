@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/boot1/user_layout :: layout(~{::content}, ~{::head_additional})}">
+<html lang="en">
+
+<head>
+    <th:block th:fragment="head_additional">
+        <!--        <link rel="stylesheet" type="text/css" href="/css/boot1/style.css" th:href="@{/css/boot1/style.css}">-->
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <th:block th:if="${session.user == null}">
+        <div class="container mb-5 mt-5">
+            <div class="text-center">
+                <a th:href="@{/login}" th:text="${message}" style="border: 1px solid black; padding: 5px; background-color: white;"></a>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:if="${(!#lists.isEmpty(orderDetailList) or orderDetailList!=null) and session.user!=null}">
+        <div class="container mb-5 mt-5">
+            <form method="post" th:action="@{/invoice/makeInvoice/{orderId}(orderId=${order.getId()})}">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row justify-content-between">
+                            <div class="col-auto">
+                                <p class="mb-0">Invoice: #<strong th:text="${order.getId()}">01/01/01/2018</strong></p>
+                                <p>Payment date: <strong
+                                        th:text="${#dates.format(order.getOrderDate(), 'dd/MM/yyy')}"></strong>
+                                </p>
+                            </div>
+                            <div class="col-auto">
+                                <span th:if="${order.getStatus() == 1}">Status: <strong>Pending verification</strong> </span>
+                                <span th:if="${order.getStatus() == 2}">Status: <strong>Verified</strong> </span>
+                                <span th:if="${order.getStatus() == 3}">Status: <strong>On its way (Estimated 5 days)</strong> </span>
+                                <span th:if="${order.getStatus() == 4}">Status: <strong>Delivered</strong> </span>
+                                <span th:if="${order.getStatus() == 5}">Status: <strong>Processing return</strong> </span>
+                                <span th:if="${order.getStatus() == 6}">Status: <strong>Return processed</strong> </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4 justify-content-between">
+                            <div class="col-auto">
+                                <h6 class="mb-3">From:</h6>
+                                <div>
+                                    <strong>Filtro Coffee Shop</strong>
+                                </div>
+                                <div>Da Oai commune, Da Huoai district, Lam Dong province, Viet Nam</div>
+                                <div>Email: fourleavesshoes@gmail.com</div>
+                                <div>Phone: +86 999 0187</div>
+                            </div>
+
+                            <div class="col-auto">
+                                <h6 class="mb-3">To:</h6>
+                                <div>
+                                    <strong th:text="${order.user.getName()}">Bob Mart</strong>
+                                </div>
+                                <div th:text="${order.getAddress()}">Attn: Daniel Marek</div>
+                                <div th:text="${order.getCity()}">43-190 Mikolow, Poland</div>
+                                <div th:text="${order.getEmail()}">Email: marek@daniel.com</div>
+                                <div th:text="${order.getPhoneNumber()}">Phone: +48 123 456 789</div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="table-responsive-sm">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="center">#</th>
+                                    <th>Product name</th>
+                                    <th class="right">Price</th>
+                                    <th class="center">Quantity</th>
+                                    <th class="right">Item Subtotal</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="item, index : ${orderDetailList}">
+                                    <td class="center" th:text="${index.index+1}">1</td>
+                                    <td class="left strong" th:text="${item.getProduct().productName}">Origin License
+                                    </td>
+                                    <td class="right"
+                                        th:text="${#numbers.formatDecimal(item.getPrice(), 0, 'COMMA', 0, 'COMMA')+ 'đ'}">
+                                        $999,00
+                                    </td>
+                                    <td class="center" th:text="${item.getQuantity()}">1</td>
+                                    <td class="right"
+                                        th:text="${#numbers.formatDecimal(item.getTotal(), 0, 'COMMA', 0, 'COMMA')+ 'đ'}">
+                                        $999,00
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-sm-5">
+                                Payment Method: <strong
+                                    th:text="${order.getPaymentMethod().getName()}"></strong>
+                            </div>
+
+                            <div class="col-lg-4 col-sm-5 ml-auto">
+                                <table class="table table-clear">
+                                    <tbody>
+                                    <tr>
+                                        <td class="left">
+                                            <strong>Temporary Total</strong>
+                                        </td>
+                                        <td class="right"
+                                            th:text="${#numbers.formatDecimal(order.getTotal(), 0, 'COMMA', 0, 'COMMA')+ 'đ'}">
+                                            $8.497,00
+                                        </td>
+                                    </tr>
+                                    <!--                                    <tr>-->
+                                    <!--                                        <td class="left">-->
+                                    <!--                                            <strong>Discount (20%)</strong>-->
+                                    <!--                                        </td>-->
+                                    <!--                                        <td class="right">$1,699,40</td>-->
+                                    <!--                                    </tr>-->
+                                    <tr>
+                                        <td class="left">
+                                            <strong>VAT (10%)</strong>
+                                        </td>
+                                        <td class="right"
+                                            th:text="${#numbers.formatDecimal(order.getTotal()*0.1, 0, 'COMMA', 0, 'COMMA')+ 'đ'}">
+                                            $679,76
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left">
+                                            <strong>Total</strong>
+                                        </td>
+                                        <td class="right">
+                                            <strong th:text="${#numbers.formatDecimal(order.getTotal() + order.getTotal()*0.1, 0, 'COMMA', 0, 'COMMA')+ 'đ'}">$7.477,36</strong>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <input type="hidden" name="totalPrice" id="totalPrice" th:value="${order.getTotal() + order.getTotal()*0.1}">
+                    <button th:if="${check == 1}" type="submit">Confirm Invoice</button>
+                    <button th:if="${check == 2}" type="submit" disabled>Confirmed invoice</button>
+                </div>
+
+            </form>
+        </div>
+    </th:block>
+    <th:block
+            th:if="${(#lists.isEmpty(orderDetailList) or orderDetailList == null) and session.user !=null}">
+        <div class="container mb-5 mt-5">
+            <div class="text-center">
+                <h2>PLEASE CHECKOUT BEFORE READ INVOICE!</h2>
+            </div>
+        </div>
+    </th:block>
+    <script>
+        var totalPriceInput = document.getElementById('totalPrice');
+        var totalPriceValue = totalPriceInput.value;
+        var totalPriceInt = parseInt(totalPriceValue);
+
+        // Chuyển đổi totalPriceInt thành kiểu số nguyên và gán lại cho input value
+        totalPriceInput.value = totalPriceInt;
+    </script>
+</th:block>
+</body>
+</html>

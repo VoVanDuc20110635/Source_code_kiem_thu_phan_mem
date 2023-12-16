@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/boot1/user_layout :: layout(~{::content}, ~{::head_additional})}">
+<html lang="en">
+
+<head>
+    <th:block th:fragment="head_additional">
+        <link rel="stylesheet" type="text/css" href="/css/boot1/login/bootstrap.css" th:href="@{/css/boot1/login/bootstrap.css}">
+        <link rel="stylesheet" type="text/css" href="/css/boot1/login/main.css" th:href="@{/css/boot1/login/main.css}">
+        <link rel="stylesheet" type="text/css" href="/css/boot1/style.css" th:href="@{/css/boot1/style.css}">
+    </th:block>
+</head>
+<body>
+<div th:fragment="content">
+    <!--================Login Box Area =================-->
+    <section class="login_box_area section_gap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="login_box_img">
+                        <img class="img-fluid-footer" th:src="@{/image/boot1/login.jpg}" alt="">
+                        <div class="hover">
+                            <h4>Welcome to manager page</h4>
+                            <p>Admin use this page to manage Four Leaves Shoes Shop</p>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="login_form_inner">
+                        <h3>Log in to enter</h3>
+
+                        <form class="row login_form" method="post" th:action="@{/admin/login}">
+                            <div class="col-md-12 form-group">
+                                <div id="errorMessage" th:if="${message}" class="alert alert-danger" role="alert"
+                                     th:text="${message}">
+                                </div>
+                                <div id="errorMessage1" th:if="${errorMessage}" class="alert alert-danger" role="alert"
+                                     th:text="${errorMessage}">
+                                </div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" id="username" class="form-control" name="accountName" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'" required>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <div class="password-input-wrapper">
+                                <input type="password" id="password" class="form-control" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required>
+                                <span class="toggle-password" onclick="togglePasswordVisibility('password')"><i class="fa fa-eye"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <div class="creat_account">
+                                    <input type="checkbox" id="f-option2" name="selector">
+                                    <label for="f-option2">Keep me logged in</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="hidden" name="_csrfParameterName" th:value="${_csrfToken}">
+                                <button type="submit" class="primary-btn">Log In</button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function togglePasswordVisibility(inputId) {
+                var input = document.getElementById(inputId);
+                var icon = input.nextElementSibling.querySelector('i');
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = "password";
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+        </script>
+    </section>
+    <!--================End Login Box Area =================-->
+</div>
+</body>
+</html>

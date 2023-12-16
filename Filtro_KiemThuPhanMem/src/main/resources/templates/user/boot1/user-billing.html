@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/boot1/user_layout :: layout(~{::content}, ~{::head_additional})}">
+<html lang="en">
+
+<head>
+    <th:block th:fragment="head_additional">
+<!--        <link rel="stylesheet" th:href="@{/css/user-billing.css}" href="/css/user-billing.css">-->
+<!--        <script src="/javascript/modalBilling.js"></script>-->
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="text-center" th:if="${session.user == null}">
+        <a th:href="@{/login}" th:text="${message}" style="border: 1px solid black; padding: 5px; background-color: white;">
+        </a>
+    </div>
+    <th:block th:if="${session.user != null}">
+    <div class="container-xl px-4 mt-4">
+        <!-- Account page navigation-->
+        <nav class="nav nav-borders">
+            <nav class="nav nav-borders">
+                <a class="nav-link  ms-0" th:href="@{/user/profile}" href="/user/user-profile"
+                >Profile</a>
+                <a class="nav-link active" th:href="@{/user/billing}" href="/user/user-billing"
+                >Order</a>
+                <a class="nav-link " th:href="@{/user/security}" href="/user/user-security"
+                >Password</a>
+            </nav>
+        </nav>
+        <hr class="mt-0 mb-4">
+        <!-- Payment methods card-->
+        <!-- Billing history card-->
+        <div class="card mb-4">
+            <div class="card-header">Order History</div>
+            <div class="card-body p-0" th:if="${!#lists.isEmpty(orderList) or orderList != null}">
+                <!-- Billing history table-->
+                <div class="table-responsive table-billing-history">
+                    <table class="table mb-0">
+                        <thead>
+                        <tr>
+                            <th class="border-gray-200" scope="col">ID</th>
+                            <th class="border-gray-200" scope="col">Date</th>
+                            <th class="border-gray-200" scope="col">Price</th>
+                            <th class="border-gray-200" scope="col">Status</th>
+                            <th class="border-gray-200" scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item, index: ${orderList}">
+                            <td th:text="'#'+ ${item.getId()}"></td>
+                            <td th:text="${#dates.format(item.getOrderDate(), 'yyyy-MM-dd')}">06/15/2021</td>
+                            <td th:text="${#numbers.formatDecimal(item.getTotal(), 0, 'COMMA', 0, 'COMMA') + 'đ'}">
+                                $29.99
+                            </td>
+                            <td>
+                                <span th:if="${item.getStatus() == 1}"
+                                      class="badge bg-light text-dark">Pending verification</span>
+                                <span th:if="${item.getStatus() == 2}"
+                                      class="badge bg-light text-dark">Verified</span>
+                                <span th:if="${item.getStatus() == 3}"
+                                      class="badge bg-light text-dark">On its way</span>
+                                <span th:if="${item.getStatus() == 4}"
+                                      class="badge bg-success text-dark">Delivered</span>
+                                <span th:if="${item.getStatus() == 5}"
+                                      class="badge bg-light text-dark">Processing return</span>
+                                <span th:if="${item.getStatus() == 6}"
+                                      class="badge bg-success text-dark">Return processed</span>
+                            </td>
+                            <td class="action-td"><a
+                                    th:href="@{/invoice/{orderId}(orderId=${item.getId()})}"
+                                    class="btn btn-outline-primary btn-sm">Read Invoice</a>
+                                <th:block th:if="${item.getStatus() gt 2}">
+                                    <a
+                                            href="#deleteBillingModal" data-toggle="modal"
+                                            class="delete btn btn-outline-danger btn-sm">Cancel Order</a>
+                                    <input type="hidden" name="id" id="id" th:value="${item.getId()}">
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <th:block th:if="${#lists.isEmpty(orderList) or orderList == null}">
+                <div class="text-center mt-5 mb-5">
+                    <h2 class="font-bold">You don't have any orders yets!</h2>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <div id="deleteBillingModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" th:action="@{/order/cancel}">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete Employee</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete these Records?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-danger" value="Delete">
+                        <input type="hidden" name="id" id="deleteOrderId">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </th:block>
+</th:block>
+</body>
+</html>
